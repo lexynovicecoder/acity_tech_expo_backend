@@ -7,8 +7,7 @@ from contextlib import asynccontextmanager
 from API.admin_routers import router_admin
 from API.user_routers import router_user
 
-connect_args = {"check_same_thread": False}  # enables multi-thread access
-engine = create_engine(DATABASE_URL, echo=True, connect_args=connect_args)
+engine = create_engine(DATABASE_URL, echo=True)
 
 
 
@@ -37,3 +36,4 @@ def example():
 
 app.include_router(router_user,tags=['User'])
 app.include_router(router_admin,tags=['Admin'])
+
