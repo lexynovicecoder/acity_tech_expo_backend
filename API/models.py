@@ -7,9 +7,10 @@ class UserChallenge(SQLModel, table=True):
     user_id: int = Field(foreign_key="user.id")
     challenge_id: int = Field(foreign_key="challenge.id")
     level_of_completion: int = Field(default=0)  # Unique for each user in a challenge
-
     user: Optional["User"] = Relationship(back_populates="challenges")
     challenge: Optional["Challenge"] = Relationship(back_populates="users")
+
+
 
 
 class Admin(SQLModel, table=True):
