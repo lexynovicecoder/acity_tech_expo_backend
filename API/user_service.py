@@ -12,7 +12,7 @@ from .models import User, UserEncoding
 from fastapi.responses import JSONResponse
 from facial_rec.face_rec import capture_and_authenticate_user
 from API.auth import create_access_token
-from .models import UserChallenge
+from .models import UserChallenge,Challenge
 
 
 def register_user(user_data, session):
@@ -62,3 +62,4 @@ def login_with_face(session):
     token = create_access_token(user.username, user.id, timedelta(minutes=60), user.is_admin)
 
     return {'access_token': token, 'token_type': 'bearer'}
+

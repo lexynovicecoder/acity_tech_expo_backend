@@ -26,6 +26,6 @@ def user(user: dict = Depends(get_current_user), session: Session = Depends(get_
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication Failed")
     return {"User": user}  
 
-@router_user.post("/accept_challenge/{challenge_id}", status_code=status.HTTP_200_OK)
-def accept_challenge(challenge_id: int,session: Session = Depends(get_session),user: dict = Depends(jwt_decode_token)):
-    return join_challenge(challenge_id,session,user)
+# @router_user.post("/accept_challenge/{challenge_id}", status_code=status.HTTP_200_OK)
+# def accept_challenge(challenge_id: int,session: Session = Depends(get_session),user: dict = Depends(jwt_decode_token)):
+#     return join_challenge(challenge_id,session,user)
