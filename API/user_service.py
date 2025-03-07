@@ -46,33 +46,19 @@ def register_user(user_data, session):
 
 def login_with_face(session):
     username = capture_and_authenticate_user(session)
-
-    if username == "unknown":
-        print("❌ No valid username detected after 5 attempts!")  # Debug print
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not in database")
-
+    
     print(f"🔍 Searching for user in DB: {username}")  # Debug print
 
+    # Retrieve user ID from DB
     statement = select(User).where(User.username == username)
     user = session.exec(statement).first()
 
-    
+    if not user:
+        print("❌ User not found in database!")  # Debug print
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
     print(f"✅ User {user.username} found. Generating token...")  # Debug print
     
     token = create_access_token(user.username, user.id, timedelta(minutes=60), user.is_admin)
 
     return {'access_token': token, 'token_type': 'bearer'}
-
-
-def join_challenge(challenge_id, session,payload):
-    userid_payload = payload.get('id')
-    statement = session.exec(select(UserChallenge).where(UserChallenge.user_id == userid_payload)).first()
-    if statement:
-        raise HTTPException(status_code=400, detail="Already participating challenge")
-    user_challenge = UserChallenge(user_id=userid_payload, challenge_id=challenge_id)
-    session.add(user_challenge)
-    session.commit()
-    session.refresh(user_challenge)
-    return user_challenge
-

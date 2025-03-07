@@ -7,19 +7,10 @@ from fastapi import HTTPException
 from sqlmodel import select
 from API.models import User, UserEncoding
 
-# Load AuraFace model
-face_app = FaceAnalysis(name="auraface", providers=["CUDAExecutionProvider", "CPUExecutionProvider"], root=".")
-face_app.prepare(ctx_id=0, det_size=(640, 640))
 
 
-import cv2
-import pickle
-import numpy as np
-from insightface.app import FaceAnalysis
-from sklearn.metrics.pairwise import cosine_similarity
-from fastapi import HTTPException
-from sqlmodel import select
-from API.models import User, UserEncoding
+
+
 
 # Load AuraFace model
 face_app = FaceAnalysis(name="auraface", providers=["CUDAExecutionProvider", "CPUExecutionProvider"], root=".")
@@ -30,10 +21,7 @@ def capture_and_authenticate_user(session):
     video_capture = cv2.VideoCapture(0)
     print("📷 Looking for a face...")
 
-    attempts = 5  # Maximum attempts
-    attempt_count = 0
-
-    while attempt_count < attempts:
+    while True:
         ret, frame = video_capture.read()
         if not ret:
             continue
@@ -77,16 +65,13 @@ def capture_and_authenticate_user(session):
                 video_capture.release()
                 cv2.destroyAllWindows()
                 return best_match  # Return username
-
             else:
-                print(f"❌ No strong match found. Attempt {attempt_count + 1} of {attempts}.")
-
-        attempt_count += 1  # Increment attempt count
+                print("❌ No strong match found. Try again.")
+                break
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-    print("❌ Face authentication failed after 5 attempts.")
     video_capture.release()
     cv2.destroyAllWindows()
-    return "unknown"  # Return "unknown" after 5 failed attempts
+    raise HTTPException(status_code=401, detail="No valid user found")
