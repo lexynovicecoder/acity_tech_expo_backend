@@ -16,7 +16,9 @@ from huggingface_hub import snapshot_download
 snapshot_download(
     repo_id="fal/AuraFace-v1",
     local_dir="$MODEL_DIR",
-    force_download=True  # Ensures fresh download
+    force_download=True  # Ensures fresh download,
+    allow_patterns=["scrfd_500m_bnkps.onnx", "glintr100.onnx"],  # Smaller detection model
+
 )
 EOF
 
