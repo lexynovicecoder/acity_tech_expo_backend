@@ -6,6 +6,7 @@ from API.models import User
 from contextlib import asynccontextmanager
 from API.admin_routers import router_admin
 from API.user_routers import router_user
+import uvicorn
 
 engine = create_engine(DATABASE_URL, echo=True)
 
@@ -37,3 +38,10 @@ def example():
 app.include_router(router_user,tags=['User'])
 app.include_router(router_admin,tags=['Admin'])
 
+if __name__ == "__main__":
+  
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+    )
