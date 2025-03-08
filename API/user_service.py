@@ -10,7 +10,7 @@ import numpy as np
 import pickle
 from .models import User, UserEncoding
 from fastapi.responses import JSONResponse
-from facial_rec.face_rec import capture_and_authenticate_user
+from face_rec import capture_and_authenticate_user
 from API.auth import create_access_token
 from .models import UserChallenge,Challenge
 

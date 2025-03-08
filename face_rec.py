@@ -13,7 +13,7 @@ from API.models import User, UserEncoding
 
 
 # Load AuraFace model
-face_app = FaceAnalysis(name="auraface", providers="CPUExecutionProvider", root=".")
+face_app = FaceAnalysis(name="buffalo_l", providers="CPUExecutionProvider", root=".")
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 
 
