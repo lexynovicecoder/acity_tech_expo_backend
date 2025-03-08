@@ -16,9 +16,13 @@ def create_user(create_user_request: CreateUserDTO, session: Session = Depends(g
     user=register_user(create_user_request,session)
     return user
 
-@router_user.post("/signin", response_model=dict)
+@router_user.post("/facial-rec-signin", response_model=dict)
 def login_for_access_token(session: Session = Depends(get_session)):
     return login_with_face(session)
+
+@router_user.post("/login", response_model=dict)
+def login_for_access_token(login_request: LoginDTO, session: Session = Depends(get_session)):
+    return manual_login(session,login_request)
 
 @router_user.get("/user", status_code=status.HTTP_200_OK)
 def user(user: dict = Depends(get_current_user), session: Session = Depends(get_session)):

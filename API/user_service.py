@@ -41,7 +41,22 @@ def register_user(user_data, session):
 
     return JSONResponse(content={"message": "✅ Signup successful! Face encoding stored."}, status_code=201)
 
+def authenticate_user(username:str, password:str, db):
+    statement = select(User).where(User.username == username)
+    user = db.exec(statement).first()
+    if not user:
+        return False
+    if not bcrypt_context.verify(password, user.hashed_password):
+        return False
+    return user
 
+
+def manual_login(session,dto):
+    user = authenticate_user(dto.username, dto.password, session)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
+    token = create_access_token(user.username, user.id, timedelta(minutes=60),user.is_admin)
+    return {'access_token': token, 'token_type': 'bearer'}
 
 
 def login_with_face(session):
