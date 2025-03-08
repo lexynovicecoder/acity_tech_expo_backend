@@ -4,7 +4,7 @@ from insightface.app import FaceAnalysis
 from fastapi import HTTPException
 
 # Initialize FaceAnalysis
-face_app = FaceAnalysis(name="auraface", providers=["CUDAExecutionProvider", "CPUExecutionProvider"], root=".")
+face_app = FaceAnalysis(name="auraface", providers="CUDAExecutionProvider", root=".")
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 
 def capture_images_and_encode():
