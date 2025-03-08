@@ -1,24 +1,23 @@
 #!/bin/bash
 
-pip install -r requirements.txt
-pip install gdown
+# Set model directory
+MODEL_DIR="models/auraface"
 
+# Create the directory if it doesn't exist
+mkdir -p $MODEL_DIR
 
-echo "Creating model directory..."
-mkdir -p models/auraface
-cd models/auraface
+echo "📥 Installing dependencies..."
+pip install --no-cache-dir insightface huggingface_hub onnxruntime
 
-echo "Downloading models from Google Drive..."
-gdown 19Imx9B_B_uw8QMjIHmMItWcxS3bVEw7- -O 1k3d68.onnx
-gdown 1sNpKPL1OTqai1-xERY2Z4qGDwImYWejD -O 2d106det.onnx
-gdown 1WLQXNj-Y_Bn6jambm8DJsWky8UDxiC8C -O genderage.onnx
-gdown 1b64c2Jrv_CuCmU6g8fBc4G0w52ICs7MF -O glintr100.onnx
-gdown 1b64c2Jrv_CuCmU6g8fBc4G0w52ICs7MF -O scrfd_10g_bnkps.onnx  # Detection model
+echo "📥 Downloading AuraFace models..."
+python3 - <<EOF
+from huggingface_hub import snapshot_download
 
-echo "Checking if models exist..."
-ls -lah
+snapshot_download(
+    repo_id="fal/AuraFace-v1",
+    local_dir="$MODEL_DIR",
+    force_download=True  # Ensures fresh download
+)
+EOF
 
-cd ../..
-
-echo "Starting application..."
-python main.py
+echo "✅ AuraFace models downloaded successfully!"
