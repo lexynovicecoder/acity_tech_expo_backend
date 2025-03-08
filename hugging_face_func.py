@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 # Initialize FaceAnalysis
 face_app = FaceAnalysis(name="auraface", providers=["CPUExecutionProvider"], root=".")
-face_app.prepare(ctx_id=0, det_size=(640, 640))
+face_app.prepare(ctx_id=0, det_model="scrfd_10g_bnkps")
 
 def capture_images_and_encode():
     video_capture = cv2.VideoCapture(0)
