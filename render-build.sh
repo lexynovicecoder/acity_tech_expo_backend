@@ -22,7 +22,7 @@ snapshot_download(
     repo_id="fal/AuraFace-v1",
     local_dir=download_dir,
     force_download=True,
-    allow_patterns=["scrfd_10g_bnkps.onnx", "glintr100.onnx"],
+    allow_patterns=["scrfd_2.5g_bnkps.onnx", "w600k_mbf.onnx"],
 )
 
 # Ensure final model directory exists
