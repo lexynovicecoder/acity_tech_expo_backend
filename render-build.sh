@@ -1,5 +1,8 @@
 #!/bin/bash
 
+pip install gdown
+
+
 echo "Creating model directory..."
 mkdir -p models/auraface
 cd models/auraface
