@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set model directory
-MODEL_DIR="models/auraface"
+MODEL_DIR="./models/auraface"
 
 # Create the directory if it doesn't exist
 mkdir -p $MODEL_DIR
