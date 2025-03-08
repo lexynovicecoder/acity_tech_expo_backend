@@ -7,6 +7,12 @@ from fastapi import HTTPException
 face_app = FaceAnalysis(name="auraface", providers=["CPUExecutionProvider"], root="models/auraface",allowed_modules=["detection", "recognition"])
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 
+# Debugging: Print loaded models
+print("✅ Loaded models:", face_app.models.keys())
+
+# Ensure 'detection' is loaded
+assert 'detection' in face_app.models, "❌ Detection model is missing!"
+
 def capture_images_and_encode():
     video_capture = cv2.VideoCapture(0)
 
