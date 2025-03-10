@@ -7,6 +7,9 @@ from contextlib import asynccontextmanager
 from API.admin_routers import router_admin
 from API.user_routers import router_user
 import uvicorn
+from flask import Flask, request, jsonify
+import numpy as np
+import onnxruntime as ort
 
 
 engine = create_engine(DATABASE_URL, echo=True)
