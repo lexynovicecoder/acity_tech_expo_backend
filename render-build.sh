@@ -17,6 +17,8 @@ snapshot_download(
     repo_id="fal/AuraFace-v1",
     local_dir="$MODEL_DIR",
     force_download=True  # Ensures fresh download
+    allow_patterns=["scrfd_2.5g_bnkps.onnx", "w600k_mbf.onnx"],
+
 )
 EOF
 
