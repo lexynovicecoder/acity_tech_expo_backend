@@ -1,13 +1,11 @@
-flask
-onnxruntime
+Flask==3.1.0
+onnxruntime==1.20.1
 numpy
 fastapi
 sqlmodel
-PyJWT
+PyJWT  # Remove if not using JWT authentication
 uvicorn
-pydantic 
+pydantic
 opencv-python-headless==4.11.0.86
-onnxruntime==1.20.1
-insightface==0.7.3
-Flask==3.1.0
-huggingface-hub==0.29.2
+insightface==0.7.3  # Remove if not using face recognition
+huggingface-hub==0.29.2  # Remove if not loading models from Hugging Face
