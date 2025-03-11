@@ -5,8 +5,8 @@ import numpy as np
 app = Flask(__name__)
 
 # Load models (ensure these are in your working directory)
-scrfd_session = onnxruntime.InferenceSession("models/auraface/scrfd_10g_bnkps.onnx", providers=["CPUExecutionProvider"])
-glint_session = onnxruntime.InferenceSession("models/auraface/glintr100.onnx", providers=["CPUExecutionProvider"])
+scrfd_session = onnxruntime.InferenceSession("models/auraface/scrfd_2.5g_bnkps.onnx", providers=["CPUExecutionProvider"])
+glint_session = onnxruntime.InferenceSession("models/auraface/w600k_mbf.onnx", providers=["CPUExecutionProvider"])
 
 @app.route("/predict", methods=["POST"])
 def predict():
