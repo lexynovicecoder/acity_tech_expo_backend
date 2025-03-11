@@ -2,13 +2,13 @@ services:
   - name: fastapi-service
     type: web
     env: python
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements-flask.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port 10133 "
     plan: free
 
   - name: flask-ml-service
     type: web
     env: python
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements-flask.txt"
     startCommand: "python app.py"
     plan: free
