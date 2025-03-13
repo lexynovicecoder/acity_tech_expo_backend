@@ -10,7 +10,7 @@ class CreateUserDTO(BaseModel):
     password: str
 
 class LoginDTO(BaseModel):
-    username: str = Field(index=True)
+    email: str
     password: str
 
 class AdminLoginDTO(BaseModel):

@@ -52,7 +52,7 @@ def authenticate_user(username:str, password:str, db):
 
 
 def manual_login(session,dto):
-    user = authenticate_user(dto.username, dto.password, session)
+    user = authenticate_user(dto.email, dto.password, session)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
     token = create_access_token(user.username, user.id, timedelta(minutes=60),user.is_admin)

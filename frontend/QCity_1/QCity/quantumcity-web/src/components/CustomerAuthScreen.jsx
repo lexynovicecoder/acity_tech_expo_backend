@@ -22,28 +22,51 @@ const CustomerAuthScreen = ({ onContinue }) => {
     }, 1000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+  
     if (!email || !password) {
       setError("Email and password are required");
       return;
     }
-    
+  
     if (!isSignIn && password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    
+  
     setIsLoading(true);
-    
-    // Simulate authentication process
-    setTimeout(() => {
+  
+    try {
+      const endpoint = isSignIn ? "login" : "signup";  // Determine correct API route
+
+      const response = await fetch(`http://192.168.0.180:10133/${endpoint}`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password })
+});
+
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.detail || "Something went wrong");
+      }
+  
+      // Handle successful login/signup
+      localStorage.setItem("token", data.token); // Store the token
+      onContinue(); // Navigate to the next screen
+  
+    } catch (err) {
+      setError(err.message);
+    } finally {
       setIsLoading(false);
-      onContinue();
-    }, 1000);
+    }
   };
+  
 
   return (
     <div 
