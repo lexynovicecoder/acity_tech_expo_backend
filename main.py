@@ -7,9 +7,7 @@ from contextlib import asynccontextmanager
 from API.admin_routers import router_admin
 from API.user_routers import router_user
 import uvicorn
-from flask import Flask, request, jsonify
-import numpy as np
-import onnxruntime as ort
+from fastapi.middleware.cors import CORSMiddleware # import here
 
 
 engine = create_engine(DATABASE_URL, echo=True)
@@ -34,7 +32,19 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# declare origin/s
+origins = [
+    "http://127.0.0.1:8000",
+    "l http://localhost:5173/"
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get('/')
 def example():
     return {"Title": "Gamified Bin"}
@@ -49,3 +59,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=10133,
     )
+
+    
