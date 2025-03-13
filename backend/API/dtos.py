@@ -6,7 +6,6 @@ from API.models import User
 
 class CreateUserDTO(BaseModel):
     email: str
-    username: str
     password: str
 
 class LoginDTO(BaseModel):

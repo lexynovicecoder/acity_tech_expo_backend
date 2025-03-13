@@ -17,7 +17,7 @@ from .models import UserChallenge,Challenge
 
 def register_user(user_data, session):
     # Check if user exists
-    existing = session.exec(select(User).where(User.email == user_data.email or User.username == user_data.username)).first()
+    existing = session.exec(select(User).where(User.email == user_data.email )).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email or username already exists.")
 
@@ -27,7 +27,6 @@ def register_user(user_data, session):
     # Create new user
     user = User(
         email=user_data.email,
-        username=user_data.username,
         hashed_password=bcrypt_context.hash(user_data.password)
     )
     session.add(user)
@@ -41,8 +40,8 @@ def register_user(user_data, session):
 
     return JSONResponse(content={"message": "✅ Signup successful! Face encoding stored."}, status_code=201)
 
-def authenticate_user(username:str, password:str, db):
-    statement = select(User).where(User.username == username)
+def authenticate_user(email:str, password:str, db):
+    statement = select(User).where(User.email == email)
     user = db.exec(statement).first()
     if not user:
         return False
@@ -55,26 +54,26 @@ def manual_login(session,dto):
     user = authenticate_user(dto.email, dto.password, session)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
-    token = create_access_token(user.username, user.id, timedelta(minutes=60),user.is_admin)
+    token = create_access_token(user.email, user.id, timedelta(minutes=60),user.is_admin)
     return {'access_token': token, 'token_type': 'bearer'}
 
 
 def login_with_face(session):
-    username = capture_and_authenticate_user(session)
+    email = capture_and_authenticate_user(session)
     
-    print(f"🔍 Searching for user in DB: {username}")  # Debug print
+    print(f"🔍 Searching for user in DB: {email}")  # Debug print
 
     # Retrieve user ID from DB
-    statement = select(User).where(User.username == username)
+    statement = select(User).where(User.email == email)
     user = session.exec(statement).first()
 
     if not user:
         print("❌ User not found in database!")  # Debug print
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
-    print(f"✅ User {user.username} found. Generating token...")  # Debug print
+    print(f"✅ User {user.email} found. Generating token...")  # Debug print
     
-    token = create_access_token(user.username, user.id, timedelta(minutes=60), user.is_admin)
+    token = create_access_token(user.email, user.id, timedelta(minutes=60), user.is_admin)
 
     return {'access_token': token, 'token_type': 'bearer'}
 

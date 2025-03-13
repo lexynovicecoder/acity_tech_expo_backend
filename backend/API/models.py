@@ -30,7 +30,6 @@ class UserEncoding(SQLModel, table=True):
 class User(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     email: str
-    username: str
     hashed_password: str
     total_points: Optional[int] = Field(default=0)
     challenges_completed: Optional[int] = Field(default=0)

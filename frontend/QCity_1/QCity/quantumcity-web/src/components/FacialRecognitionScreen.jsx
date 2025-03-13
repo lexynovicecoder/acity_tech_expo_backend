@@ -9,6 +9,7 @@ const FacialRecognitionScreen = ({ onComplete, onBack }) => {
   const animationFrameRef = useRef(null);
   const streamRef = useRef(null);
 
+
   // Initialize camera
   useEffect(() => {
     const startCamera = async () => {
@@ -82,6 +83,21 @@ const FacialRecognitionScreen = ({ onComplete, onBack }) => {
         }
       }
     }, 100);
+  };
+
+  const sendImageToBackend = async (dataUrl) => {
+    try {
+      const response = await fetch("http://192.168.0.180:10133/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, image: dataUrl }),
+      });
+
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      console.error("Error sending image:", error);
+    }
   };
   
   // Simulate face detection visualization
