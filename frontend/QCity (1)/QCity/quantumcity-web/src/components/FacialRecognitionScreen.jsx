@@ -3,12 +3,11 @@ import axios from "axios"; // Import Axios for API calls
 
 const FacialRecognitionScreen = ({ onComplete, onBack }) => {
   const [scanningState, setScanningState] = useState("initial"); 
-  const [scanMessage, setScanMessage] = useState("Position your face in the frame");
+  const [scanMessage, setScanMessage] = useState("Press the button to start scanning");
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
-  // Initialize camera
+  // Initialize camera for live preview
   useEffect(() => {
     const startCamera = async () => {
       try {
@@ -30,31 +29,25 @@ const FacialRecognitionScreen = ({ onComplete, onBack }) => {
     };
   }, []);
 
-  // Capture image and send to backend
+  // Start authentication process (backend captures the image)
   const startScan = async () => {
-    if (!canvasRef.current || !videoRef.current) return;
-    
     setScanningState("scanning");
     setScanMessage("Scanning your face...");
-    
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    
-    const imageData = canvas.toDataURL("image/jpeg"); // Convert to Base64
+
     try {
-      const response = await axios.post("http://127.0.0.1:8000/facial-rec-signin", { image: imageData });
-      
-      if (response.data.success) {
+      const response = await axios.post("http://127.0.0.1:8000/facial-rec-signin");
+
+      if (response.data.access_token) {
         setScanningState("success");
         setScanMessage("Face verified successfully!");
-        setTimeout(onComplete, 1500);
+        localStorage.setItem("token", response.data.access_token); // Store token
+        setTimeout(() => onComplete(response.data.access_token), 1500); // Pass token on success
       } else {
         setScanningState("error");
         setScanMessage("Verification failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error sending image:", error);
+      console.error("Error verifying face:", error);
       setScanningState("error");
       setScanMessage("Error verifying face. Try again.");
     }
@@ -65,10 +58,9 @@ const FacialRecognitionScreen = ({ onComplete, onBack }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg text-center">
         <h1 className="text-2xl font-bold">Face Verification</h1>
         <p className="text-gray-600">{scanMessage}</p>
-        
+
         <div className="relative w-64 h-48 mt-4 border-2 border-gray-300 rounded-lg">
           <video ref={videoRef} autoPlay playsInline muted className="absolute w-full h-full"></video>
-          <canvas ref={canvasRef} className="hidden" width={640} height={480}></canvas>
         </div>
 
         <button
