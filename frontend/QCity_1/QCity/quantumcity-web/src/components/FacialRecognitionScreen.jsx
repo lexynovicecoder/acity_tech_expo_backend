@@ -1,54 +1,93 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const FacialRecognitionScreen = ({ onComplete, onBack }) => {
-  const [scanningState, setScanningState] = useState("initial"); // initial, scanning, success, error
+const FacialRecognitionScreen = ({ onComplete, onBack, token }) => {
+  const [scanningState, setScanningState] = useState("initial");
   const [scanMessage, setScanMessage] = useState("Position your face in the frame");
   const [progressValue, setProgressValue] = useState(0);
+  const [userID, setUserID] = useState(null);
+  
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
   const streamRef = useRef(null);
 
+  
+  
 
-  // Initialize camera
   useEffect(() => {
-    const startCamera = async () => {
+    async function fetchUserID() {
       try {
-        const constraints = {
-          video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            facingMode: "user"
-          }
-        };
-        
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        streamRef.current = stream;
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (err) {
-        console.error("Error accessing camera:", err);
+        const response = await fetch("http://192.168.0.180:10133/decode_token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) throw new Error("Failed to decode token");
+
+        const data = await response.json();
+        setUserID(data.userID); // Store userID
+      } catch (error) {
+        console.error("Error decoding JWT:", error);
+      }
+    }
+
+    if (token) fetchUserID();
+  }, [token]);
+  
+  const captureImage = () => {
+    if (!videoRef.current || !canvasRef.current) return null;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+
+    // Set canvas size to match video feed
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+
+    // Draw video frame onto canvas
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas content to base64 image
+    return canvas.toDataURL("image/jpeg");
+  };
+
+  const sendImageToBackend = async () => {
+    if (!userID) {
+      console.error("User ID not available");
+      return;
+    }
+
+    const imageData = captureImage();
+    if (!imageData) {
+      console.error("Failed to capture image");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://192.168.0.180:10133/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userID, image: imageData }),
+      });
+
+      const result = await response.json();
+      console.log("Server Response:", result);
+
+      if (result.success) {
+        setScanningState("success");
+        setScanMessage("Face registered successfully!");
+        setTimeout(() => onComplete(), 1500);
+      } else {
         setScanningState("error");
-        setScanMessage("Camera access denied. Please allow camera access and try again.");
+        setScanMessage("Registration failed. Try again.");
       }
-    };
-
-    startCamera();
-
-    // Clean up camera on unmount
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, []);
-
-  // Simulate facial recognition process
+    } catch (error) {
+      console.error("Error sending image:", error);
+      setScanningState("error");
+      setScanMessage("Error occurred. Please try again.");
+    }
+  };
   const startScan = () => {
     if (scanningState === "scanning") return;
     
@@ -83,21 +122,6 @@ const FacialRecognitionScreen = ({ onComplete, onBack }) => {
         }
       }
     }, 100);
-  };
-
-  const sendImageToBackend = async (dataUrl) => {
-    try {
-      const response = await fetch("http://192.168.0.180:10133/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, image: dataUrl }),
-      });
-
-      const result = await response.json();
-      console.log(result);
-    } catch (error) {
-      console.error("Error sending image:", error);
-    }
   };
   
   // Simulate face detection visualization

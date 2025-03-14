@@ -38,8 +38,7 @@ class Token(BaseModel):
     token_type: str
 
 
-
-async def jwt_decode_token(credentials: HTTPAuthorizationCredentials = Depends(security_scheme)):
+async def jwt_decode_token(credentials):
     if credentials.scheme != "Bearer":
         raise HTTPException(status_code=401, detail="Invalid authentication scheme")
     try:

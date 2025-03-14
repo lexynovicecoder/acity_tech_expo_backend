@@ -15,16 +15,16 @@ from API.auth import create_access_token
 from .models import UserChallenge,Challenge
 
 
+
+
+
 def register_user(user_data, session):
     # Check if user exists
-    existing = session.exec(select(User).where(User.email == user_data.email )).first()
+    existing = session.exec(select(User).where(User.email == user_data.email)).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email or username already exists.")
 
-    # Capture face embeddings
-    encoding_binary = capture_images_and_encode()
-
-    # Create new user
+    # Create new user (without capturing face yet)
     user = User(
         email=user_data.email,
         hashed_password=bcrypt_context.hash(user_data.password)
@@ -33,12 +33,26 @@ def register_user(user_data, session):
     session.commit()
     session.refresh(user)  # Get user ID
 
-    # Store encodings
-    user_encoding = UserEncoding(user_id=user.id, encoding=encoding_binary)
-    session.add(user_encoding)
-    session.commit()
+    return JSONResponse(content={"message": "✅ Signup successful!", "user_id": user.id}, status_code=201)
 
-    return JSONResponse(content={"message": "✅ Signup successful! Face encoding stored."}, status_code=201)
+def capture_face(user_id,session):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    try:
+        encoding_binary = capture_images_and_encode()  # Capture face embeddings
+        
+        # Store encoding in database
+        user_encoding = UserEncoding(user_id=user.id, encoding=encoding_binary)
+        session.add(user_encoding)
+        session.commit()
+
+        return JSONResponse(content={"message": "✅ Face encoding stored successfully!"}, status_code=201)
+
+    except HTTPException as e:
+        return JSONResponse(content={"success": False, "detail": str(e)}, status_code=500)
+
 
 def authenticate_user(email:str, password:str, db):
     statement = select(User).where(User.email == email)
