@@ -1,5 +1,6 @@
 import React from "react";
 
+
 // Helper function to get secondary color for gradient based on avatar style
 const getSecondaryColor = (style) => {
   switch(style) {
